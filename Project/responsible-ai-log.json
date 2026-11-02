@@ -1,0 +1,322 @@
+[
+  {
+    "case_id": "NS001",
+    "ai_diagnosis": "PC access port may be in the wrong VLAN.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed Fa0/4 is in VLAN 1 while it should be VLAN 20.",
+    "reason_for_correction": "Accepted because the supplied switchport evidence directly supports the diagnosis.",
+    "evidence": "show interfaces Fa0/4 switchport: Access Mode VLAN 1; show vlan brief: VLAN 20 exists.",
+    "final_diagnosis": "Fa0/4 is assigned to VLAN 1 instead of VLAN 20."
+  },
+  {
+    "case_id": "NS002",
+    "ai_diagnosis": "VLAN 30 is not allowed on the SW1-SW2 trunk.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "SW2#show interfaces trunk; Port Fa0/1 Status trunking; Port Fa0/1 Vlans allowed on trunk 10,20; SW2#show vlan brief; 30 SERVERS active",
+    "final_diagnosis": "VLAN 30 is not allowed on the SW1-SW2 trunk."
+  },
+  {
+    "case_id": "NS003",
+    "ai_diagnosis": "Fa0/8 is still assigned to VLAN 1 rather than VLAN 40.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "SW1#show vlan brief; 40 VOICE active Fa0/9; SW1#show interfaces Fa0/8 switchport; Access Mode VLAN: 1 (default)",
+    "final_diagnosis": "Fa0/8 is still assigned to VLAN 1 rather than VLAN 40."
+  },
+  {
+    "case_id": "NS004",
+    "ai_diagnosis": "The two switch ports are in different VLANs (50 and 60).",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "SW1#show vlan brief; 50 ENGINEERING active Fa0/5; 60 TEST active Fa0/6; PC-A 192.168.50.10/24; PC-B 192.168.50.11/24",
+    "final_diagnosis": "The two switch ports are in different VLANs (50 and 60)."
+  },
+  {
+    "case_id": "NS005",
+    "ai_diagnosis": "PC-A uses gateway 192.168.10.254, but the router interface is 192.168.10.1.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A: IP 192.168.10.25 Mask 255.255.255.0 Gateway 192.168.10.254; R1#show ip interface brief; GigabitEthernet0/0 192.168.10.1 up up",
+    "final_diagnosis": "PC-A uses gateway 192.168.10.254, but the router interface is 192.168.10.1."
+  },
+  {
+    "case_id": "NS006",
+    "ai_diagnosis": "Host default gateway is on a different subnet (192.168.30.1).",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A: IP 192.168.20.15 Mask 255.255.255.0 Gateway 192.168.30.1; R1#show ip interface brief; G0/0 192.168.20.1 up up",
+    "final_diagnosis": "Host default gateway is on a different subnet (192.168.30.1)."
+  },
+  {
+    "case_id": "NS007",
+    "ai_diagnosis": "The client gateway does not match the active R1 interface for VLAN 70.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A: IP 10.70.0.20 Mask 255.255.255.0 Gateway 10.70.0.254; R1#show ip interface brief; G0/1 10.70.0.1 up up",
+    "final_diagnosis": "The client gateway does not match the active R1 interface for VLAN 70."
+  },
+  {
+    "case_id": "NS008",
+    "ai_diagnosis": "Server default gateway is outside its local subnet.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "Server: IP 172.16.5.50 Mask 255.255.255.0 Gateway 172.16.6.1; R2#show ip interface brief; G0/0 172.16.5.1 up up",
+    "final_diagnosis": "Server default gateway is outside its local subnet."
+  },
+  {
+    "case_id": "NS009",
+    "ai_diagnosis": "DHCP pool serves 192.168.10.0/24 but R1 has no interface in that subnet; clients on G0/0 are on 192.168.20.0/24.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip dhcp pool; Pool LAN10; Network 192.168.10.0 /24; Default router 192.168.10.1; R1#show ip interface brief; G0/0 192.168.20.1 up up",
+    "final_diagnosis": "DHCP pool serves 192.168.10.0/24 but R1 has no interface in that subnet; clients on G0/0 are on 192.168.20.0/24."
+  },
+  {
+    "case_id": "NS010",
+    "ai_diagnosis": "The router LAN interface is shutdown, so DHCP requests cannot reach the service.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip dhcp pool; Pool VLAN20; Network 192.168.20.0 /24; Default router 192.168.20.1; R1#show ip dhcp binding; Bindings: none; R1#show ip interface brief; G0/0 192.168.20.1 administratively down down",
+    "final_diagnosis": "The router LAN interface is shutdown, so DHCP requests cannot reach the service."
+  },
+  {
+    "case_id": "NS011",
+    "ai_diagnosis": "DHCP advertises gateway 192.168.30.254 while R1 interface is 192.168.30.1.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip dhcp pool; Pool VLAN30; Network 192.168.30.0 /24; Default router 192.168.30.254; R1#show ip interface brief; G0/1 192.168.30.1 up up",
+    "final_diagnosis": "DHCP advertises gateway 192.168.30.254 while R1 interface is 192.168.30.1."
+  },
+  {
+    "case_id": "NS012",
+    "ai_diagnosis": "The DHCP pool has no free leases.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip dhcp pool; Pool LAB; Network 10.0.0.0 /29; Total addresses 6; Leased addresses 6; R1#show ip dhcp binding; 10.0.0.1  ...; 10.0.0.2  ...; 10.0.0.3  ...; 10.0.0.4  ...; 10.0.0.5  ...; 10.0.0.6  ...",
+    "final_diagnosis": "The DHCP pool has no free leases."
+  },
+  {
+    "case_id": "NS013",
+    "ai_diagnosis": "No DNS server is configured on R1 even though clients are pointed to it.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A: IP 192.168.40.10 Mask 255.255.255.0 Gateway 192.168.40.1 DNS 192.168.40.1; R1#show running-config | include ip name-server; (no output)",
+    "final_diagnosis": "No DNS server is configured on R1 even though clients are pointed to it."
+  },
+  {
+    "case_id": "NS014",
+    "ai_diagnosis": "Client DNS points to 192.168.60.53, while the reachable DNS server is 192.168.50.53.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A: IP 192.168.50.10 Gateway 192.168.50.1 DNS 192.168.60.53; Server: DNS 192.168.50.53 up; R1#show ip route 192.168.50.0; C 192.168.50.0/24 is directly connected",
+    "final_diagnosis": "Client DNS points to 192.168.60.53, while the reachable DNS server is 192.168.50.53."
+  },
+  {
+    "case_id": "NS015",
+    "ai_diagnosis": "ACL explicitly denies DNS traffic from the client subnet to the DNS server.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show access-lists; Extended IP access list CLIENT-FILTER; 10 deny udp 192.168.60.0 0.0.0.255 host 192.168.60.53 eq domain; 20 permit ip any any; R1#show ip interface g0/0; Internet address is 192.168.60.1/24",
+    "final_diagnosis": "ACL explicitly denies DNS traffic from the client subnet to the DNS server."
+  },
+  {
+    "case_id": "NS016",
+    "ai_diagnosis": "The static DNS/host entry maps app.lab.local to the wrong address.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "PC-A> nslookup app.lab.local; Name: app.lab.local; Address: 10.10.10.99; DNS#show running-config | include app.lab.local; ip host app.lab.local 10.10.10.99",
+    "final_diagnosis": "The static DNS/host entry maps app.lab.local to the wrong address."
+  },
+  {
+    "case_id": "NS017",
+    "ai_diagnosis": "A routing issue is likely because 192.168.20.0/24 is not in R1's route table.",
+    "ai_confidence": "Medium",
+    "human_decision": "Edited",
+    "human_correction": "Human reviewer checked the topology and noted R2's connected LAN is 192.168.20.0/24; the missing R1 route is the specific fault, not a generic routing failure.",
+    "reason_for_correction": "The AI wording was too broad; human review made the diagnosis topology-specific.",
+    "evidence": "R1 show ip route lacks 192.168.20.0/24; R2 shows it as directly connected.",
+    "final_diagnosis": "R1 needs the intended route to R2's 192.168.20.0/24 LAN."
+  },
+  {
+    "case_id": "NS018",
+    "ai_diagnosis": "HQ R1 lacks a route to the branch network 172.16.30.0/24.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip route 172.16.30.0; % Network not in table; R2#show ip route; C 172.16.30.0/24 is directly connected, G0/0",
+    "final_diagnosis": "HQ R1 lacks a route to the branch network 172.16.30.0/24."
+  },
+  {
+    "case_id": "NS019",
+    "ai_diagnosis": "R2 lacks the return route to R1 LAN 192.168.1.0/24.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip route 192.168.2.0; S 192.168.2.0/24 [1/0] via 10.1.1.2; R2#show ip route 192.168.1.0; % Network not in table",
+    "final_diagnosis": "R2 lacks the return route to R1 LAN 192.168.1.0/24."
+  },
+  {
+    "case_id": "NS020",
+    "ai_diagnosis": "The new LAN is connected but not included in OSPF network statements, so neighbors do not learn it.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip protocols; Routing Protocol is \"ospf 1\"; Networks: 10.0.0.0/30; R1#show ip route 192.168.50.0; C 192.168.50.0/24 is directly connected",
+    "final_diagnosis": "The new LAN is connected but not included in OSPF network statements, so neighbors do not learn it."
+  },
+  {
+    "case_id": "NS021",
+    "ai_diagnosis": "ACL explicitly denies HTTPS from the user subnet to the internal web server.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show access-lists; Extended IP access list WEB-FILTER; 10 deny tcp 10.20.10.0 0.0.0.255 host 10.20.20.10 eq 443; 20 permit ip any any",
+    "final_diagnosis": "ACL explicitly denies HTTPS from the user subnet to the internal web server."
+  },
+  {
+    "case_id": "NS022",
+    "ai_diagnosis": "ACL denies TCP port 22 from the management subnet.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show access-lists MGMT; 10 permit icmp 192.168.99.0 0.0.0.255 any; 20 deny tcp 192.168.99.0 0.0.0.255 any eq 22; 30 permit ip any any",
+    "final_diagnosis": "ACL denies TCP port 22 from the management subnet."
+  },
+  {
+    "case_id": "NS023",
+    "ai_diagnosis": "Guest traffic is allowed by an ACL and may be able to reach internal resources.",
+    "ai_confidence": "High",
+    "human_decision": "Edited",
+    "human_correction": "Human reviewer confirmed the target is specifically the database/internal subnet and required security-policy review before changing the ACL.",
+    "reason_for_correction": "ACL changes are security-sensitive; the reviewer added the policy constraint and refused an automatic fix.",
+    "evidence": "GUEST ACL rule 10 permits guest 192.168.80.0/24 to internal 10.0.50.0/24 before the broader deny.",
+    "final_diagnosis": "Guest-to-internal access is explicitly permitted; human security approval is required before reordering/removing the permit."
+  },
+  {
+    "case_id": "NS024",
+    "ai_diagnosis": "ACL denies outbound HTTP (TCP/80) for the client subnet.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show access-lists OUTBOUND; 10 permit udp 192.168.60.0 0.0.0.255 any eq domain; 20 deny tcp 192.168.60.0 0.0.0.255 any eq www; 30 permit tcp 192.168.60.0 0.0.0.255 any eq 443",
+    "final_diagnosis": "ACL denies outbound HTTP (TCP/80) for the client subnet."
+  },
+  {
+    "case_id": "NS025",
+    "ai_diagnosis": "NAT is not translating inside hosts because no translations are present.",
+    "ai_confidence": "Medium",
+    "human_decision": "Rejected",
+    "human_correction": "Human reviewer rejected the conclusion that NAT configuration alone is proven faulty and requested verification of traffic generation, inside/outside roles, and the NAT ACL.",
+    "reason_for_correction": "Empty translations show a symptom, but do not by themselves prove which NAT prerequisite is missing.",
+    "evidence": "show ip nat translations has no entries; statistics show Hits 0 and Misses 42.",
+    "final_diagnosis": "NAT translation is not occurring; the exact cause requires checking the NAT rule/ACL and generating test traffic."
+  },
+  {
+    "case_id": "NS026",
+    "ai_diagnosis": "NAT ACL covers only 192.168.20.0/25, leaving the upper half of the /24 untranslated.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show running-config | include ip nat inside source; ip nat inside source list 10 interface GigabitEthernet0/1 overload; R1#show access-lists 10; 10 permit 192.168.20.0 0.0.0.127",
+    "final_diagnosis": "NAT ACL covers only 192.168.20.0/25, leaving the upper half of the /24 untranslated."
+  },
+  {
+    "case_id": "NS027",
+    "ai_diagnosis": "NAT outside is assigned to the wrong/down interface; the actual WAN is G0/1.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip nat statistics; Inside interfaces: GigabitEthernet0/0; Outside interfaces: GigabitEthernet0/2; R1#show ip interface brief; G0/1 203.0.113.2 up up; G0/2 unassigned administratively down down",
+    "final_diagnosis": "NAT outside is assigned to the wrong/down interface; the actual WAN is G0/1."
+  },
+  {
+    "case_id": "NS028",
+    "ai_diagnosis": "Port forwarding is configured on external port 8080, while the requirement is public TCP/80.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "R1#show ip nat translations; Pro Inside global 203.0.113.10:8080 Inside local 192.168.30.10:80; R1#show running-config | include ip nat inside source static; ip nat inside source static tcp 192.168.30.10 80 203.0.113.10 8080",
+    "final_diagnosis": "Port forwarding is configured on external port 8080, while the requirement is public TCP/80."
+  },
+  {
+    "case_id": "NS029",
+    "ai_diagnosis": "DHCP service may be unavailable to wireless clients.",
+    "ai_confidence": "Medium",
+    "human_decision": "Edited",
+    "human_correction": "Reviewer identified the stronger evidence: VLAN 80 is absent from the AP uplink trunk even though the guest VLAN and DHCP pool exist.",
+    "reason_for_correction": "The AI was too general; trunk evidence provides a more specific Layer 2 cause.",
+    "evidence": "AP uses VLAN 80; SW1 trunk allows only VLANs 10,20,30; R1 has a GUEST DHCP pool for 192.168.80.0/24.",
+    "final_diagnosis": "VLAN 80 is missing from the AP uplink trunk, preventing guest DHCP traffic from reaching R1."
+  },
+  {
+    "case_id": "NS030",
+    "ai_diagnosis": "Guest subnet 192.168.90.0/24 is not included in the NAT ACL, so guest traffic is not translated.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "AP#show wireless vlan; SSID Guest VLAN 90; R1#show ip interface brief; G0/2 192.168.90.1 up up; R1#show ip nat statistics; Inside interfaces: GigabitEthernet0/1; Outside interfaces: GigabitEthernet0/2; NAT ACL 15; R1#show access-lists 15; 10 permit 192.168.10.0 0.0.0.255",
+    "final_diagnosis": "Guest subnet 192.168.90.0/24 is not included in the NAT ACL, so guest traffic is not translated."
+  },
+  {
+    "case_id": "NS031",
+    "ai_diagnosis": "Guest ACL explicitly permits access to the internal server subnet.",
+    "ai_confidence": "High",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "AP#show wireless vlan; SSID Guest VLAN 100; R1#show access-lists GUEST-IN; 10 permit ip 192.168.100.0 0.0.0.255 10.100.10.0 0.0.0.255; 20 permit ip 192.168.100.0 0.0.0.255 any",
+    "final_diagnosis": "Guest ACL explicitly permits access to the internal server subnet."
+  },
+  {
+    "case_id": "NS032",
+    "ai_diagnosis": "Client PSK does not match the AP PSK.",
+    "ai_confidence": "Medium",
+    "human_decision": "Accepted",
+    "human_correction": "No correction; reviewer confirmed the expected fault from the supplied case evidence.",
+    "reason_for_correction": "Accepted because the supplied case evidence supports the diagnosis.",
+    "evidence": "AP#show running-config | include ssid|wpa|passphrase; ssid LabWiFi;  authentication open;  wpa-psk ascii 0 LabNet2026; Client profile: SSID LabWiFi, WPA2-PSK, key LabNet2025",
+    "final_diagnosis": "Client PSK does not match the AP PSK."
+  }
+]

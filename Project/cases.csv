@@ -1,0 +1,168 @@
+case_id,symptom,topology_note,show_outputs,expected_fault,osi_layer,concept,severity,expected_next_command,expected_fix,human_review_status
+NS001,PC in VLAN 20 cannot reach another host in VLAN 20.,SW1 connects PC-A and PC-B; both should be access ports in VLAN 20.,"SW1#show vlan brief
+10  SALES active Fa0/1, Fa0/2
+20  STAFF active Fa0/3
+SW1#show interfaces Fa0/4 switchport
+Administrative Mode: static access
+Operational Mode: static access
+Access Mode VLAN: 1 (default)",Fa0/4 is in VLAN 1 instead of required VLAN 20.,Layer 2,VLAN access-port assignment,Medium,show interfaces Fa0/4 switchport,"Configure Fa0/4 as access VLAN 20, then verify with show vlan brief.",Required
+NS002,Users on SW2 lose access to VLAN 30 servers after a trunk is configured.,"SW1-SW2 is an 802.1Q trunk; VLANs 10,20,30 must cross it.","SW2#show interfaces trunk
+Port Fa0/1 Status trunking
+Port Fa0/1 Vlans allowed on trunk 10,20
+SW2#show vlan brief
+30 SERVERS active",VLAN 30 is not allowed on the SW1-SW2 trunk.,Layer 2,802.1Q trunk allowed VLANs,High,show interfaces Fa0/1 switchport,Allow VLAN 30 on the trunk and verify trunk VLAN list.,Required
+NS003,A phone/PC access port reports no connectivity after moving the PC to VLAN 40.,SW1 Fa0/8 should serve an IP phone/PC data VLAN 40.,"SW1#show vlan brief
+40 VOICE active Fa0/9
+SW1#show interfaces Fa0/8 switchport
+Access Mode VLAN: 1 (default)",Fa0/8 is still assigned to VLAN 1 rather than VLAN 40.,Layer 2,Access VLAN configuration,Medium,show interfaces Fa0/8 switchport,Set the access VLAN to 40 and verify host connectivity.,Required
+NS004,Two PCs on the same switch cannot communicate even though IP addresses are in the same subnet.,PC-A is on Fa0/5 and PC-B on Fa0/6; both should be VLAN 50.,"SW1#show vlan brief
+50 ENGINEERING active Fa0/5
+60 TEST active Fa0/6
+PC-A 192.168.50.10/24
+PC-B 192.168.50.11/24",The two switch ports are in different VLANs (50 and 60).,Layer 2,VLAN segmentation,Medium,show interfaces status,"Place both ports in the intended VLAN 50, after human review.",Required
+NS005,PC gets an IP but cannot reach a remote subnet.,PC-A is in 192.168.10.0/24; R1 G0/0 is the gateway.,"PC-A: IP 192.168.10.25 Mask 255.255.255.0 Gateway 192.168.10.254
+R1#show ip interface brief
+GigabitEthernet0/0 192.168.10.1 up up","PC-A uses gateway 192.168.10.254, but the router interface is 192.168.10.1.",Layer 3,Default gateway mismatch,High,show running-config interface g0/0,Correct the PC gateway to 192.168.10.1 (or intentionally configure a matching gateway after review).,Required
+NS006,Host can ping same-subnet devices but not the internet.,LAN 192.168.20.0/24 connects to R1 G0/0.,"PC-A: IP 192.168.20.15 Mask 255.255.255.0 Gateway 192.168.30.1
+R1#show ip interface brief
+G0/0 192.168.20.1 up up",Host default gateway is on a different subnet (192.168.30.1).,Layer 3,Gateway addressing,High,show running-config interface g0/0,Set the host gateway to 192.168.20.1 and retest.,Required
+NS007,Only one subnet has remote connectivity failure while local pings work.,VLAN 70 clients use R1 as their default gateway.,"PC-A: IP 10.70.0.20 Mask 255.255.255.0 Gateway 10.70.0.254
+R1#show ip interface brief
+G0/1 10.70.0.1 up up",The client gateway does not match the active R1 interface for VLAN 70.,Layer 3,Inter-VLAN gateway configuration,High,show ip route,Confirm the connected route and then correct the host gateway to 10.70.0.1.,Required
+NS008,A server is reachable from its LAN but replies to remote clients fail.,Server subnet is 172.16.5.0/24; R2 G0/0 is 172.16.5.1.,"Server: IP 172.16.5.50 Mask 255.255.255.0 Gateway 172.16.6.1
+R2#show ip interface brief
+G0/0 172.16.5.1 up up",Server default gateway is outside its local subnet.,Layer 3,Server default gateway,High,show running-config interface g0/0,"Change server gateway to 172.16.5.1, then verify remote ping.",Required
+NS009,New PCs receive no IPv4 address.,R1 provides DHCP for 192.168.10.0/24.,"R1#show ip dhcp pool
+Pool LAN10
+Network 192.168.10.0 /24
+Default router 192.168.10.1
+R1#show ip interface brief
+G0/0 192.168.20.1 up up",DHCP pool serves 192.168.10.0/24 but R1 has no interface in that subnet; clients on G0/0 are on 192.168.20.0/24.,Layer 3,DHCP pool/network mismatch,High,show running-config | section ip dhcp,Align the DHCP pool/network with the client subnet or configure the intended LAN interface.,Required
+NS010,Clients receive 169.254.x.x addresses.,R1 G0/0 is the DHCP server for VLAN 20.,"R1#show ip dhcp pool
+Pool VLAN20
+Network 192.168.20.0 /24
+Default router 192.168.20.1
+R1#show ip dhcp binding
+Bindings: none
+R1#show ip interface brief
+G0/0 192.168.20.1 administratively down down","The router LAN interface is shutdown, so DHCP requests cannot reach the service.",Layer 3,DHCP and interface state,High,show interfaces g0/0,Bring the intended interface up after human review and verify DHCP binding.,Required
+NS011,Some clients get addresses but cannot reach the gateway.,DHCP serves VLAN 30 clients.,"R1#show ip dhcp pool
+Pool VLAN30
+Network 192.168.30.0 /24
+Default router 192.168.30.254
+R1#show ip interface brief
+G0/1 192.168.30.1 up up",DHCP advertises gateway 192.168.30.254 while R1 interface is 192.168.30.1.,Layer 3,DHCP default-router option,High,show running-config | section dhcp,Change the DHCP default-router to the actual gateway 192.168.30.1.,Required
+NS012,DHCP pool is exhausted and new users cannot obtain addresses.,A /29 lab network supports six usable client addresses.,"R1#show ip dhcp pool
+Pool LAB
+Network 10.0.0.0 /29
+Total addresses 6
+Leased addresses 6
+R1#show ip dhcp binding
+10.0.0.1  ...
+10.0.0.2  ...
+10.0.0.3  ...
+10.0.0.4  ...
+10.0.0.5  ...
+10.0.0.6  ...",The DHCP pool has no free leases.,Layer 3,DHCP address exhaustion,Medium,show ip dhcp conflict,Review stale leases/reservations and expand the pool only if the topology permits.,Required
+NS013,Users can ping 8.8.8.8 but cannot open example.com.,Clients use R1 as DNS forwarder and have internet connectivity.,"PC-A: IP 192.168.40.10 Mask 255.255.255.0 Gateway 192.168.40.1 DNS 192.168.40.1
+R1#show running-config | include ip name-server
+(no output)",No DNS server is configured on R1 even though clients are pointed to it.,Layer 7,DNS resolver configuration,Medium,show running-config | include dns,Configure a reachable DNS server or point clients to the approved DNS server.,Required
+NS014,Only DNS name resolution fails; direct IP access to the web server works.,Client DNS should be 192.168.50.53.,"PC-A: IP 192.168.50.10 Gateway 192.168.50.1 DNS 192.168.60.53
+Server: DNS 192.168.50.53 up
+R1#show ip route 192.168.50.0
+C 192.168.50.0/24 is directly connected","Client DNS points to 192.168.60.53, while the reachable DNS server is 192.168.50.53.",Layer 7,DNS server address,Medium,ipconfig /all,Change the client DNS server to the approved reachable DNS server and test resolution.,Required
+NS015,Clients receive intermittent name-resolution failures.,DNS server is on VLAN 60; ACL should allow UDP/TCP 53 from clients.,"R1#show access-lists
+Extended IP access list CLIENT-FILTER
+10 deny udp 192.168.60.0 0.0.0.255 host 192.168.60.53 eq domain
+20 permit ip any any
+R1#show ip interface g0/0
+Internet address is 192.168.60.1/24",ACL explicitly denies DNS traffic from the client subnet to the DNS server.,Layer 4/7,DNS traffic filtering,High,show access-lists CLIENT-FILTER,"Have a human review the security policy, then replace the incorrect deny with an approved DNS permit rule.",Required
+NS016,A lab hostname resolves to an old server address.,Internal DNS server should return 10.10.10.20 for app.lab.local.,"PC-A> nslookup app.lab.local
+Name: app.lab.local
+Address: 10.10.10.99
+DNS#show running-config | include app.lab.local
+ip host app.lab.local 10.10.10.99",The static DNS/host entry maps app.lab.local to the wrong address.,Layer 7,Static name resolution,Medium,show running-config | include app.lab.local,Correct the approved host/DNS record to 10.10.10.20 and verify resolution.,Required
+NS017,LAN A can reach router but not LAN B.,"R1 connects 192.168.10.0/24 to R2, which owns 192.168.20.0/24.","R1#show ip route
+C 192.168.10.0/24 is directly connected, G0/0
+10.0.0.0/30 is directly connected, G0/1
+R2#show ip route
+C 192.168.20.0/24 is directly connected, G0/0",R1 has no route toward 192.168.20.0/24.,Layer 3,Static/dynamic routing,High,show ip route 192.168.20.0,Add the appropriate static/dynamic route after confirming the intended topology.,Required
+NS018,Remote branch network is unreachable from headquarters.,R1 HQ and R2 branch are connected by 10.0.0.0/30.,"R1#show ip route 172.16.30.0
+% Network not in table
+R2#show ip route
+C 172.16.30.0/24 is directly connected, G0/0",HQ R1 lacks a route to the branch network 172.16.30.0/24.,Layer 3,Missing route,High,show ip route,Configure the intended route via the R2 next hop or restore the routing protocol advertisement.,Required
+NS019,Traffic reaches the remote router but return traffic is lost.,Two routers connect 10.1.1.0/30; R1 LAN is 192.168.1.0/24 and R2 LAN is 192.168.2.0/24.,"R1#show ip route 192.168.2.0
+S 192.168.2.0/24 [1/0] via 10.1.1.2
+R2#show ip route 192.168.1.0
+% Network not in table",R2 lacks the return route to R1 LAN 192.168.1.0/24.,Layer 3,Return path routing,High,show ip route 192.168.1.0,Add/restore the return route on R2 after human review.,Required
+NS020,A newly added network is not advertised to OSPF neighbors.,R1 has LAN 192.168.50.0/24 and runs OSPF process 1.,"R1#show ip protocols
+Routing Protocol is ""ospf 1""
+Networks: 10.0.0.0/30
+R1#show ip route 192.168.50.0
+C 192.168.50.0/24 is directly connected","The new LAN is connected but not included in OSPF network statements, so neighbors do not learn it.",Layer 3,OSPF network advertisement,High,show running-config | section router ospf,Advertise the intended LAN in OSPF and verify with show ip ospf neighbor/route.,Required
+NS021,Users can reach the internet but cannot reach the internal web server.,ACL should permit HTTPS to 10.20.20.10 from 10.20.10.0/24.,"R1#show access-lists
+Extended IP access list WEB-FILTER
+10 deny tcp 10.20.10.0 0.0.0.255 host 10.20.20.10 eq 443
+20 permit ip any any",ACL explicitly denies HTTPS from the user subnet to the internal web server.,Layer 4,Extended ACL,High,show ip interface g0/0,Human must review policy before changing the deny; then apply the approved permit/deny order.,Required
+NS022,Ping works but SSH to a router is blocked.,Management subnet 192.168.99.0/24 should be allowed to SSH to R1.,"R1#show access-lists MGMT
+10 permit icmp 192.168.99.0 0.0.0.255 any
+20 deny tcp 192.168.99.0 0.0.0.255 any eq 22
+30 permit ip any any",ACL denies TCP port 22 from the management subnet.,Layer 4,SSH ACL filtering,High,show access-lists MGMT,Review the management policy and change the rule only with human approval.,Required
+NS023,Guest clients can reach an internal database server unexpectedly.,Guest VLAN 80 should be isolated from 10.0.50.0/24.,"R1#show access-lists GUEST
+10 permit ip 192.168.80.0 0.0.0.255 10.0.50.0 0.0.0.255
+20 deny ip 192.168.80.0 0.0.0.255 10.0.0.0 0.0.0.255
+30 permit ip any any",The first ACL rule permits guest-to-database traffic before the broader internal deny.,Layer 3/4,ACL order and guest isolation,Critical,show access-lists GUEST,Escalate for human security review; reorder rules only after confirming intended guest isolation.,Required
+NS024,DNS works but HTTP access to a public test site is blocked.,Outbound ACL should allow TCP 80/443 from 192.168.60.0/24.,"R1#show access-lists OUTBOUND
+10 permit udp 192.168.60.0 0.0.0.255 any eq domain
+20 deny tcp 192.168.60.0 0.0.0.255 any eq www
+30 permit tcp 192.168.60.0 0.0.0.255 any eq 443",ACL denies outbound HTTP (TCP/80) for the client subnet.,Layer 4,ACL protocol/port filtering,Medium,show access-lists OUTBOUND,"Have the reviewer confirm policy, then permit HTTP if it is approved.",Required
+NS025,Inside hosts have no internet access; NAT translations are empty.,R1 translates 192.168.10.0/24 to the WAN interface.,"R1#show ip nat translations
+Pro Inside global Inside local Outside local Outside global
+(no entries)
+R1#show ip nat statistics
+Inside interfaces: GigabitEthernet0/0
+Outside interfaces: GigabitEthernet0/1
+Hits: 0 Misses: 42",No translations are being created despite inside/outside interfaces; the NAT rule/policy is missing or mismatched.,Layer 3/4,PAT/NAT configuration,High,show running-config | include ip nat,Review and configure the intended NAT/PAT rule for the inside subnet.,Required
+NS026,Only some LAN hosts get internet access.,LAN is 192.168.20.0/24; PAT should cover the whole subnet.,"R1#show running-config | include ip nat inside source
+ip nat inside source list 10 interface GigabitEthernet0/1 overload
+R1#show access-lists 10
+10 permit 192.168.20.0 0.0.0.127","NAT ACL covers only 192.168.20.0/25, leaving the upper half of the /24 untranslated.",Layer 3/4,NAT ACL scope,High,show access-lists 10,Expand the NAT ACL to the intended subnet after verifying the address plan.,Required
+NS027,NAT translations exist but users cannot connect externally.,R1 G0/1 is the WAN interface and should be the NAT outside interface.,"R1#show ip nat statistics
+Inside interfaces: GigabitEthernet0/0
+Outside interfaces: GigabitEthernet0/2
+R1#show ip interface brief
+G0/1 203.0.113.2 up up
+G0/2 unassigned administratively down down",NAT outside is assigned to the wrong/down interface; the actual WAN is G0/1.,Layer 3,NAT inside/outside interface roles,High,show running-config interface g0/1,Correct NAT outside role on the actual WAN interface after human review.,Required
+NS028,Port-forwarded internal web server is unreachable from the outside.,Public address 203.0.113.10 should forward TCP/80 to 192.168.30.10.,"R1#show ip nat translations
+Pro Inside global 203.0.113.10:8080 Inside local 192.168.30.10:80
+R1#show running-config | include ip nat inside source static
+ip nat inside source static tcp 192.168.30.10 80 203.0.113.10 8080","Port forwarding is configured on external port 8080, while the requirement is public TCP/80.",Layer 4,Static PAT,Medium,show running-config | include ip nat inside source static,"Confirm the published port, then correct the static PAT rule if TCP/80 is the approved requirement.",Required
+NS029,Clients associate to the SSID but cannot obtain an IP address.,AP bridges GuestWiFi to VLAN 80; DHCP is provided by R1.,"AP#show wireless vlan
+SSID GuestWiFi VLAN 80
+SW1#show vlan brief
+80 GUEST active
+SW1#show interfaces trunk
+Fa0/1 trunking
+Vlans allowed on trunk 10,20,30
+R1#show ip dhcp pool
+Pool GUEST network 192.168.80.0 /24","VLAN 80 is missing from the AP uplink trunk, so guest DHCP broadcasts cannot reach R1.",Layer 2/3,Wireless VLAN trunking,High,show interfaces Fa0/1 switchport,Allow VLAN 80 on the AP trunk and verify DHCP bindings.,Required
+NS030,Wireless clients connect but cannot reach the internet.,Guest SSID uses VLAN 90; guest subnet is 192.168.90.0/24.,"AP#show wireless vlan
+SSID Guest VLAN 90
+R1#show ip interface brief
+G0/2 192.168.90.1 up up
+R1#show ip nat statistics
+Inside interfaces: GigabitEthernet0/1
+Outside interfaces: GigabitEthernet0/2
+NAT ACL 15
+R1#show access-lists 15
+10 permit 192.168.10.0 0.0.0.255","Guest subnet 192.168.90.0/24 is not included in the NAT ACL, so guest traffic is not translated.",Layer 3/4,Wireless guest NAT,High,show access-lists 15,"After human policy review, include the guest subnet in the approved NAT policy if internet access is intended.",Required
+NS031,"Guest Wi-Fi can access an internal file server, violating isolation requirements.",Guest VLAN 100 should have internet-only access; internal server is 10.100.10.20.,"AP#show wireless vlan
+SSID Guest VLAN 100
+R1#show access-lists GUEST-IN
+10 permit ip 192.168.100.0 0.0.0.255 10.100.10.0 0.0.0.255
+20 permit ip 192.168.100.0 0.0.0.255 any",Guest ACL explicitly permits access to the internal server subnet.,Layer 3/4,Guest Wi-Fi isolation,Critical,show access-lists GUEST-IN,Human security review is mandatory; remove/reorder the internal permit only if isolation is confirmed.,Required
+NS032,Clients see the SSID but fail authentication.,WPA2-PSK should use the lab password configured on the AP and client.,"AP#show running-config | include ssid|wpa|passphrase
+ssid LabWiFi
+ authentication open
+ wpa-psk ascii 0 LabNet2026
+Client profile: SSID LabWiFi, WPA2-PSK, key LabNet2025",Client PSK does not match the AP PSK.,Layer 2,Wireless authentication,Medium,show running-config | section dot11,Correct the client key to the approved AP key or change the AP only with authorization; then retest.,Required
